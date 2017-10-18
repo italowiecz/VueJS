@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Assignment 1</title>
+  <script src="vue.js"></script>
+</head>
+<body>
+  <div id="exercise">
+    <p>VueJS is pretty cool - {{getName()}} ({{getAge()}})</p>
+
+    <p>{{getAge() * 3}}</p>
+
+    <p>{{getRandomFloat()}}</p>
+
+    <div>
+      <img style="width:100px;height:100px" v-bind:src="image">
+    </div>
+
+    <div>
+      <input type="text" v-bind:value="name">
+    </div>
+  </div>
+  <script>
+  new Vue({
+    el: '#exercise',
+    data: {
+      name: 'Italo',
+      age: '27',
+      image: 'https://imagens.publicocdn.com/imagens.aspx/1148277?tp=UH&amp;db=IMAGENS&w=823'
+    },
+    methods: {
+      getName: function(){
+        return this.name;
+      },
+      getAge: function(){
+        return this.age;
+      },
+      getRandomFloat: function(){
+        return Math.random();
+      },
+      prePopName: function(event){
+        return this.name;
+      }
+    }
+  });
+  </script>
+</body>
+</html>
