@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Assignment 3</title>
+  <script src="vue.js"></script>
+</head>
+<body>
+  <div id="exercise">
+    <div>
+        <p>Current Value: {{ value }}</p>
+        <button @click="value += 5">Add 5</button>
+        <button @click="value += 1">Add 1</button>
+        <p>{{ result }}</p>
+    </div>
+    <div>
+        <p>{{ value }}</p>
+    </div>
+  </div>
+  <script>
+  new Vue({
+    el: '#exercise',
+    data: {
+      value: 0
+    },
+    computed: {
+      result: function(){
+        return this.value != 37 ? 'Not there yet!' : 'Done!';
+      }
+    },
+    watch:{
+      value: function(value) {
+        var watchedValue = this;
+        setTimeout(function() {
+          watchedValue.value = 0;
+        }, 5000);
+      }
+    }
+  });
+  </script>
+</body>
+</html>
