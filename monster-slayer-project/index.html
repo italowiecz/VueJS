@@ -14,6 +14,9 @@
         <div class="healthbar">
           <div class="healthbar text-center" :style="healthbar">
             {{ healthbar.width }}
+            <template v-if="healthbar.width == '0%'">
+              {{ alertMe('lose!') }}
+            </template>
           </div>
         </div>
       </div>
@@ -70,7 +73,11 @@
         num = Number(num.replace('%',''));
         switch (event) {
           case "attack":
-            num = num - 10;
+            if((num - 10) > 0){
+              num = num - 10;
+            } else{
+              num = 0;
+            }
             this.healthbar.width = num + '%';
             break;
           case "heal":
@@ -80,7 +87,11 @@
             }
             break;
           case "specialattack":
-            num = num - 20;
+            if((num - 20) > 0){
+              num = num - 20;
+            } else{
+              num = 0;
+            }
             this.healthbar.width = num + '%';
             break;
           case "giveup":
@@ -91,6 +102,9 @@
             num = num - 10;
             this.healthbar.width = num + '%';
         }
+      },
+      alertMe: function(event){
+        alert("You " + event);
       }
     }
   });
