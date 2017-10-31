@@ -15,7 +15,7 @@
           <div class="healthbar text-center" :style="healthbar">
             {{ healthbar.width }}
             <template v-if="healthbar.width == '0%'">
-              {{ alertMe('lose!') }}
+              {{ finishGame('lose!') }}
             </template>
           </div>
         </div>
@@ -23,8 +23,11 @@
       <div class="small-6 columns">
         <h1 class="text-center">MONSTER</h1>
         <div class="healthbar">
-          <div class="healthbar text-center" style="background-color: green; margin: 0; color: white;">
-
+          <div class="healthbar text-center" :style="monsterHealthbar">
+            {{ monsterHealthbar.width }}
+            <template v-if="healthbar.width == '0%'">
+              {{ finishGame('win!') }}
+            </template>
           </div>
         </div>
       </div>
@@ -57,9 +60,13 @@
     el: '#app',
     data: {
       newGame: false,
-      myLife: 100,
-      monsterLife: 100,
       healthbar: {
+        width: '100%',
+        backgroundColor: 'green',
+        margin: 0,
+        color: 'white'
+      },
+      monsterHealthbar: {
         width: '100%',
         backgroundColor: 'green',
         margin: 0,
@@ -69,41 +76,48 @@
     methods: {
       turn: function(event){
         var self = this;
-        var num = this.healthbar.width;
-        num = Number(num.replace('%',''));
+        var myLife = this.healthbar.width;
+        myLife = Number(myLife.replace('%',''));
+        var monsterLife = this.monsterHealthbar.width;
+        monsterLife = Number(monsterLife.replace('%',''))
         switch (event) {
           case "attack":
-            if((num - 10) > 0){
-              num = num - 10;
+            if((myLife - 10) > 0 && (monsterLife - 8) > 0){
+              myLife = myLife - 10;
+              monsterLife = monsterLife - 8;
             } else{
-              num = 0;
+              myLife = 300;
+              monsterLife = 300;
             }
-            this.healthbar.width = num + '%';
+            this.healthbar.width = myLife + '%';
+            this.monsterHealthbar.width = monsterLife + '%';
             break;
           case "heal":
-            if(num < 100){
-              num = num + 10;
-              this.healthbar.width = num + '%';
+            if(myLife < 100){
+              myLife = myLife + 10;
+              this.healthbar.width = myLife + '%';
             }
             break;
           case "specialattack":
-            if((num - 20) > 0){
-              num = num - 20;
+            if((myLife - 20) > 0){
+              myLife = myLife - 20;
             } else{
-              num = 0;
+              myLife = 0;
             }
-            this.healthbar.width = num + '%';
+            this.healthbar.width = myLife + '%';
             break;
           case "giveup":
             this.healthbar.width = '100%';
+            this.monsterHealthbar.width = '100%';
             this.newGame = false;
             break;
           default:
-            num = num - 10;
-            this.healthbar.width = num + '%';
+            myLife = myLife - 10;
+            this.healthbar.width = myLife + '%';
         }
       },
-      alertMe: function(event){
+      finishGame: function(event){
+        this.newGame = false;
         alert("You " + event);
       }
     }
