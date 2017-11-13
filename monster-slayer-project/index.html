@@ -45,14 +45,17 @@
         <button id="give-up" @click="turn('giveup')">GIVE UP</button>
       </div>
     </section>
-    <section class="row log">
+    <section class="row log" v-show="logGame">
       <div class="small-12 columns">
         <ul>
           <template v-for="log in battleLog">
-            <li class="player-turn" v-show="log.playerTurn != ''">
+            <li class="player-turn" v-show="log.playerTurn != null">
                 PLAYER HITS MONSTER FOR {{ log.playerTurn }}
             </li>
-            <li class="monster-turn"  v-show="log.monsterTurn != ''">
+            <li class="player-turn"  v-show="log.healTurn != null">
+                PLAYER HEALS HIMSELF FOR {{ log.healTurn }}
+            </li>
+            <li class="monster-turn"  v-show="log.monsterTurn != null">
                 MONSTER HITS PLAYER FOR {{ log.monsterTurn }}
             </li>
           </template>
@@ -65,6 +68,7 @@
     el: '#app',
     data: {
       newGame: false,
+      logGame: false,
       healthbar: {
         width: '100%',
         backgroundColor: 'green',
@@ -78,7 +82,7 @@
         color: 'white'
       },
       battleLog: [
-        {playerTurn: '', monsterTurn: ''},
+        {playerTurn: null, monsterTurn: null, healTurn: null},
       ]
     },
     methods: {
@@ -87,35 +91,43 @@
         var myLife = this.healthbar.width;
         myLife = Number(myLife.replace('%',''));
         var monsterLife = this.monsterHealthbar.width;
-        monsterLife = Number(monsterLife.replace('%',''))
+        monsterLife = Number(monsterLife.replace('%',''));
+        this.logGame = true;
         switch (event) {
           case "attack":
-            myLife = myLife - 8;
-            monsterLife = monsterLife - 10;
+            var monsterAttack = this.randomIntFromInterval(0, 10);
+            var playerAttack = this.randomIntFromInterval(0, 10);
+            myLife = myLife - monsterAttack;
+            monsterLife = monsterLife - playerAttack;
             this.healthbar.width = myLife + '%';
             this.monsterHealthbar.width = monsterLife + '%';
-            this.battleLog.push({playerTurn: '10',
-                            monsterTurn: '8'});
+            this.battleLog.push({playerTurn: playerAttack, monsterTurn: monsterAttack});
             break;
           case "heal":
-            if(myLife < 100){
-              myLife = myLife + 10;
-              this.healthbar.width = myLife + '%';
+            var healValue = this.randomIntFromInterval(5, 10);
+            var monsterAttack = this.randomIntFromInterval(0, 10);
+            myLife = myLife + healValue - monsterAttack;
+            if(myLife > 100){
+              myLife = 100;
             }
+            this.battleLog.push({healTurn: healValue, monsterTurn: monsterAttack});
+            this.healthbar.width = myLife + '%';
             break;
           case "specialattack":
-            myLife = myLife - 15;
-            monsterLife = monsterLife - 20;
+            var monsterAttack = this.randomIntFromInterval(5, 25);
+            var playerAttack = this.randomIntFromInterval(5, 25);
+            myLife = myLife - monsterAttack;
+            monsterLife = monsterLife - playerAttack;
             this.healthbar.width = myLife + '%';
             this.monsterHealthbar.width = monsterLife + '%';
-            this.battleLog.push({playerTurn: '20',
-                            monsterTurn: '15'});
-
+            this.battleLog.push({playerTurn: playerAttack, monsterTurn: monsterAttack});
             break;
           case "giveup":
             this.healthbar.width = '100%';
             this.monsterHealthbar.width = '100%';
             this.newGame = false;
+            this.logGame = false;
+            this.battleLog.length = 0;
             break;
           default:
             myLife = myLife - 1;
@@ -130,7 +142,11 @@
         this.battleLog.length = 0;
         this.healthbar.width = '100%';
         this.monsterHealthbar.width = '100%';
+        this.logGame = false;
       },
+      randomIntFromInterval: function(min, max){
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      }
     }
   });
   </script>
