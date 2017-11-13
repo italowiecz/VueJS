@@ -14,7 +14,7 @@
         <div class="healthbar">
           <div class="healthbar text-center" :style="healthbar">
             {{ healthbar.width }}
-            <template v-if="healthbar.width == '0%'">
+            <template v-if="healthbar.width <= '0%'">
               {{ finishGame('lose!') }}
             </template>
           </div>
@@ -25,7 +25,7 @@
         <div class="healthbar">
           <div class="healthbar text-center" :style="monsterHealthbar">
             {{ monsterHealthbar.width }}
-            <template v-if="healthbar.width == '0%'">
+            <template v-if="monsterHealthbar.width <= '0%'">
               {{ finishGame('win!') }}
             </template>
           </div>
@@ -48,9 +48,14 @@
     <section class="row log">
       <div class="small-12 columns">
         <ul>
-          <li>
-
-          </li>
+          <template v-for="log in battleLog">
+            <li class="player-turn">
+                PLAYER HITS MONSTER FOR {{ log.playerTurn }}
+            </li>
+            <li class="monster-turn">
+                MONSTER HITS PLAYER FOR {{ log.monsterTurn }}
+            </li>
+          </template>
         </ul>
       </div>
     </section>
@@ -71,7 +76,10 @@
         backgroundColor: 'green',
         margin: 0,
         color: 'white'
-      }
+      },
+      battleLog: [
+        {playerTurn: '', monsterTurn: ''},
+      ]
     },
     methods: {
       turn: function(event){
@@ -82,15 +90,12 @@
         monsterLife = Number(monsterLife.replace('%',''))
         switch (event) {
           case "attack":
-            if((myLife - 10) > 0 && (monsterLife - 8) > 0){
-              myLife = myLife - 10;
-              monsterLife = monsterLife - 8;
-            } else{
-              myLife = 300;
-              monsterLife = 300;
-            }
+            myLife = myLife - 8;
+            monsterLife = monsterLife - 10;
             this.healthbar.width = myLife + '%';
             this.monsterHealthbar.width = monsterLife + '%';
+            this.battleLog.push({playerTurn: '10',
+                            monsterTurn: '8'});
             break;
           case "heal":
             if(myLife < 100){
@@ -99,12 +104,13 @@
             }
             break;
           case "specialattack":
-            if((myLife - 20) > 0){
-              myLife = myLife - 20;
-            } else{
-              myLife = 0;
-            }
+            myLife = myLife - 15;
+            monsterLife = monsterLife - 20;
             this.healthbar.width = myLife + '%';
+            this.monsterHealthbar.width = monsterLife + '%';
+            this.battleLog.push({playerTurn: '20',
+                            monsterTurn: '15'});
+
             break;
           case "giveup":
             this.healthbar.width = '100%';
@@ -112,14 +118,18 @@
             this.newGame = false;
             break;
           default:
-            myLife = myLife - 10;
+            myLife = myLife - 1;
+            monsterLife = monsterLife - 1;
             this.healthbar.width = myLife + '%';
+            this.monsterHealthbar.width = monsterLife + '%';
         }
       },
       finishGame: function(event){
-        this.newGame = false;
         alert("You " + event);
-      }
+        this.newGame = false;
+        this.healthbar.width = '100%';
+        this.monsterHealthbar.width = '100%';
+      },
     }
   });
   </script>
