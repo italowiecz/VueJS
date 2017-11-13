@@ -49,10 +49,10 @@
       <div class="small-12 columns">
         <ul>
           <template v-for="log in battleLog">
-            <li class="player-turn">
+            <li class="player-turn" v-show="log.playerTurn != ''">
                 PLAYER HITS MONSTER FOR {{ log.playerTurn }}
             </li>
-            <li class="monster-turn">
+            <li class="monster-turn"  v-show="log.monsterTurn != ''">
                 MONSTER HITS PLAYER FOR {{ log.monsterTurn }}
             </li>
           </template>
@@ -127,6 +127,7 @@
       finishGame: function(event){
         alert("You " + event);
         this.newGame = false;
+        this.battleLog.length = 0;
         this.healthbar.width = '100%';
         this.monsterHealthbar.width = '100%';
       },
